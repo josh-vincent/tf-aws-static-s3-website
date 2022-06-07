@@ -1,11 +1,19 @@
 var POINT_Y_PREFIX = "$";
 var POINT_X_PREFIX = "";
-var days = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]; //x axes
-var offers = [
-	{ x: moment("2017-07-08T06:15:02-0600"), y: 75000, r: 10, name: "Startup" },
-	{ x: moment("2021-07-08T06:15:02-0600"), y: 100000, r: 10, name: "Startup" },
-	{ x: moment("2022-07-08T06:15:02-0600"), y: 125000, r: 10, name: "Startup" },
-]; //y axes
+
+const tableData = fetch(`https://rrge4h1zdk.execute-api.ap-southeast-2.amazonaws.com/test/resource`)
+    .then(response=>response.json())
+    .then(data=>{ console.log(data); mapToChartObject(data) })
+    .catch(err => console.log(err))
+
+function mapToChartObject(data) {
+    data.map(each => { offers.push({x: moment(each.Date), y: each.Amount, r: 10, name: each.Name}) })
+    // Update Dataset 0 of already loaded chart
+    myChart.config.data.datasets[0].data = offers;
+    myChart.update()
+}
+
+var offers = []; //y axes
 var offers2 = [
 	{ x: moment("2018-07-08T06:15:02-0600"), y: 75000, r: 10, name: "Bank" },
 	{ x: moment("2020-07-08T06:15:02-0600"), y: 100000, r: 10, name: "Bank" },

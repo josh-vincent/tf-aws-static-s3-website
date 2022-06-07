@@ -39,7 +39,6 @@ resource "aws_s3_bucket_cors_configuration" "example" {
   }
 }
 
-
 resource "aws_s3_bucket_website_configuration" "www_bucket_config" {
   bucket = var.domain_name
 
@@ -59,5 +58,16 @@ resource "aws_s3_bucket_website_configuration" "root_bucket_config" {
     host_name = var.domain_name
     protocol = "https"
   }
+}
 
+resource "aws_s3_object" "object" {
+  for_each = fileset("${path.root}/files/website", "**/*")
+  bucket = aws_s3_bucket.www_bucket.bucket
+  key    = each.key
+  source = "${path.root}/files/website/${each.key}"
+
+  # The filemd5() function is available in Terraform 0.11.12 and later
+  # For Terraform 0.11.11 and earlier, use the md5() function and the file() function:
+  # etag = "${md5(file("path/to/file"))}"
+  etag = filemd5("${path.root}/files/website/${each.key}")
 }
